@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Password for Cryptomessaging Key Backup</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            margin: 0;
+            border: 0;
+            font-size: 2em;
+        }
+
+        input {
+            font-size: 1em;
+        }
+
+        h1 {
+            margin-top: 0;
+            padding: 20px;
+            width: 100%;
+            color: white;
+            background-color: #114d85;
+        }
+
+        #content {
+            margin: 20px;
+        }
+
+        #password-form-view, #password-reset-complete-view, #password-reset-error-view, #email-form-view, #email-sent-view, #email-error-view {
+            display: none;
+        }
+
+        table {
+            border: none;
+        }
+
+        td:first-child {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        #password-checkmark {
+            display: none;
+            width: 32px;
+            height: 32px;
+        }
+
+        #password-xmark {
+            display: none;
+            width: 32px;
+            height: 32px;    
+        }
+
+        #submit-email-button, #submit-password-button {
+            margin-top: 16px;
+            background-color: #3394b6;
+            border-radius: 20px;
+            padding: 4px 20px 4px 20px;
+            color: white;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            display: none;
+        }
+    </style>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script>
+        $(function() {
+            var email = getUrlParameter('email');
+            if( email ) {
+                $('#password-email-field').text( email );
+                $('#password-form-view').show();
+            } else
+                $('#email-form-view').show();
+
+            $('#password-field').keyup( crossCheckPasswords );
+            $('#password2-field').keyup( crossCheckPasswords );
+        });
+
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        };
+
+        function clean(s) {
+            if( !s )
+                return null;
+            s = s.toString().trim();
+            return s.length == 0 ? false : s;
+        }
+
+        function crossCheckPasswords() {
+            var password = clean( $("#password-field").val() );
+            var password2 = clean( $("#password2-field").val() );
+            var checkmark = $('#password-checkmark');
+            var xmark = $('#password-xmark')
+            if( !password && !password2 ) {
+                checkmark.hide();
+                xmark.hide();
+            } else if( password && password == password2 ) {
+                checkmark.show();
+                xmark.hide();
+            } else {
+                checkmark.hide();
+                xmark.show();
+            }
+        }
+
+        function submitPasswordForm() {
+            // make sure passwords are not empty, and they match
+            var password = clean( $("#password-field").val() );
+            var password2 = clean( $("#password2-field").val() );
+
+            if( !password )
+                return alert( 'Please enter a password' );
+            if( password != password2 )
+                return alert( 'Passwords don\'t match, please enter the same password twice');
+
+            // disable form and show spinner
+            const submitButton = $('#submit-password-button').prop( "disabled", true );
+            const spinner = $('.spinner').show();
+
+            const email = getUrlParameter('email');
+            const reset_code = getUrlParameter('reset_code');
+            const params = { email: email, reset_code: reset_code, password: password };
+            $.post( 'reset', params )
+            .done( function(data) {
+                $('#password-form-view').hide();
+                $('#password-reset-complete-view').show();
+            }).fail( function(result) {
+                // try to get meaningful response
+                var json = result.responseJSON || $.parseJSON(result.responseText);
+
+                // permanent failure?
+                if( result.status == 410 ) {
+                    $('#password-form-view').hide();
+                    $('#password-reset-error-view').show();
+
+                    $('#password-error-reason').text( json && json.failure ? json.failure.message : 'Reset code is no longer valid.  Please request another.');
+                    return;
+                }
+
+                // enable form and let them try again
+                $('#submit-password-button').prop( "disabled", false );
+                $('.spinner').hide();   
+
+                if( json && json.failure ) {
+                    alert( json.failure ? json.failure.message : 'Unable to submit password reset: ' + result.status );
+                } else
+                    alert( 'Failure:' + result.statusCode );
+            });
+        }
+
+        function submitEmailForm() {
+            // make sure passwords are not empty, and they match
+            var email = clean( $("#email-form-field").val() );
+            if( !email )
+                return alert( 'Please enter an email address' );
+
+            // disable form and show spinner
+            const submitButton = $('#submit-email-button').prop( "disabled", true );
+            const spinner = $('.spinner').show();
+
+            $.ajax({
+                type: 'PUT',
+                url: 'reset',
+                contentType: 'application/json',
+                data: JSON.stringify( { email: email } )
+            }).done( function(data) {
+                $('#email-form-view').hide();
+                $('#email-sent-view').show();
+            }).fail( function(result) {
+                // try to get meaningful response
+                var json = result.responseJSON || $.parseJSON(result.responseText);
+
+                // permanent failure?
+                if( result.status == 410 ) {
+                    $('#email-form-view').hide();
+                    $('#email-error-view').show();
+                    $('#email-error-reason').text( json && json.failure ? json.failure.message : 'Email could not be sent.');
+                    return;
+                }
+
+                // enable form and let them try again
+                $('#submit-email-button').prop( "disabled", false );
+                $('.spinner').hide();   
+
+                if( json && json.failure ) {
+                    alert( json.failure ? json.failure.message : 'Unable to submit password reset: ' + result.status );
+                } else
+                    alert( 'Failure:' + result.statusCode );
+            });
+        } 
+    </script>
+</head>
+<body>
+    <h1>Reset Password for Cryptomessaging Key Backup</h1>
+    <div id="content">
+        <div id="email-form-view">
+            <p>Enter your email address and we will send a password reset link.</p>
+            <table>
+                <tr><td>Email:</td><td><input type="email" id="email-form-field" size="20"/></td></tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input id="submit-email-button" type="button" value="Send Reset Email" onclick="submitEmailForm()"/>
+                        <img src="spinner.gif" class="spinner"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="email-sent-view">
+            <p>An email has been sent to you with a link to reset your password.</p>
+        </div>
+        <div id="email-error-view">
+            <p>An email could not be sent.</p>
+            <p id="email-error-reason"/>
+        </div>
+        <div id="password-form-view">
+            <p>Enter your new password below:</p>
+            <table>
+                <tr><td>Email:</td><td id="password-email-field"></td></tr>
+                <tr><td>New Password:</td><td><input type="password" id="password-field" size="20"/></td></tr>
+                <tr>
+                    <td>New Password (again):</td>
+                    <td>
+                        <input type="password" id="password2-field" size="20"/>
+                        <img id="password-checkmark" src="checkmark.png"/>
+                        <img id="password-xmark" src="x-mark.svg"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input id="submit-password-button" type="button" value="Change Password" onclick="submitPasswordForm()"/>
+                        <img src="spinner.gif" class="spinner"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="password-reset-complete-view">
+            <p>Your password has been updated.</p>
+        </div>
+        <div id="password-reset-error-view">
+            <p>Your password cannot be updated.</p>
+            <p id="password-error-reason"/>
+        </div>
+    </div>
+</body>
+</html>

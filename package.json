@@ -1,0 +1,29 @@
+{
+  "name": "key-backup-service",
+  "version": "1.0.0",
+  "description": "Provides backups of private keys and personas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cryptomessaging/key-backup-service.git"
+  },
+  "author": "Mike Prince",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/cryptomessaging/key-backup-service/issues"
+  },
+  "homepage": "https://github.com/cryptomessaging/key-backup-service#readme",
+  "dependencies": {
+    "aws-sdk": "^2.232.1",
+    "aws-serverless-express": "^3.2.0",
+    "basic-auth": "^2.0.0",
+    "body-parser": "^1.18.2",
+    "credential": "^2.0.0",
+    "express": "^4.16.3",
+    "express-async-handler": "^1.1.4",
+    "morgan": "^1.9.0"
+  }
+}
