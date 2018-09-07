@@ -66,7 +66,7 @@
             display: none;
         }
     </style>
-    <script src="jquery-3.3.1.min.js"></script>
+    <script src="/js/jquery-3.3.1.min.js"></script>
     <script>
         $(function() {
             var email = getUrlParameter('email');
@@ -209,7 +209,7 @@
                     <td></td>
                     <td>
                         <input id="submit-email-button" type="button" value="Send Reset Email" onclick="submitEmailForm()"/>
-                        <img src="spinner.gif" class="spinner"/>
+                        <img src="/images/spinner.gif" class="spinner"/>
                     </td>
                 </tr>
             </table>
@@ -230,15 +230,15 @@
                     <td>New Password (again):</td>
                     <td>
                         <input type="password" id="password2-field" size="20"/>
-                        <img id="password-checkmark" src="checkmark.png"/>
-                        <img id="password-xmark" src="x-mark.svg"/>
+                        <img id="password-checkmark" src="/images/checkmark.png"/>
+                        <img id="password-xmark" src="/images/x-mark.svg"/>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
                         <input id="submit-password-button" type="button" value="Change Password" onclick="submitPasswordForm()"/>
-                        <img src="spinner.gif" class="spinner"/>
+                        <img src="/images/spinner.gif" class="spinner"/>
                     </td>
                 </tr>
             </table>

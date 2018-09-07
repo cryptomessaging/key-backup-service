@@ -155,6 +155,8 @@ General responses:
     - Runtime: Node.js 8.10
     - Role: lambda-keyBackupService-execution-role
     - "Create"
+    - Update index.handler to lambda.handler
+    - "Save"
 
 4. Create API Gateway for lambda function
 	- API Gateway service...
@@ -178,7 +180,28 @@ General responses:
 		- Stage name: prod
 		- "Deploy"
 		- Copy the shown "Invoke URL", such as https://c28l3rkuva.execute-api.us-west-2.amazonaws.com/prod
-
-
+	- Create ACM Certificate for a custom domain name
+		- Certificate Manager...
+		- Change to US-WEST-1 (Oregon)
+		- Create certification for domain name...
+	- "Custom Domain Names"
+		- "Create Custom Domain Name"
+		- Domain Name: keybackups.cryptomessaging.org
+		- Endpoint Configuration: Regional
+		- ACM Certificate: (the one created above)
+		- "Create"
+		- "Edit"
+		- Add custom domain name
+		- Path: /
+		- Destination: keyBackupService:prod
+		- "Save"
+		- Copy Target domain name: d-w6nky6m2oi.execute-api.us-west-2.amazonaws.com
+	- Route 53
+		- "Create Record Set"
+		- Name: keybackups
+		- Type: CNAME
+		- Alias: No
+		- Value: d-w6nky6m2oi.execute-api.us-west-2.amazonaws.com
+		- "Create"
 
 

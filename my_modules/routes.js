@@ -199,8 +199,10 @@ module.exports = function( express, s3 ) {
     //
 
     function baseUrl(req) {
-        //const protocol = process.env.PERSONAS_CONTROLLER_PROTOCOL || req.protocol;
-        return req.protocol + "://" + req.get('host');
+        if( process.env.KEYBACKUPS_BASE_URL )
+            return process.env.KEYBACKUPS_BASE_URL
+        else
+            return req.protocol + "://" + req.get('host');
     }
 
     function clean(s) {
