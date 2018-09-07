@@ -14,7 +14,7 @@ module.exports = function( express, s3 ) {
     // simple status page, also used for server health
     const runningSince = new Date();
     router.get( '/status', function(req,res) {
-         res.json({ name:'Key Backup Service', version:[1,0,0], started:runningSince, url:controllerBaseUrl(req) }); 
+         res.json({ name:'Key Backup Service', version:[1,0,0], started:runningSince, url:baseUrl(req) }); 
     });
 
     // create new account
