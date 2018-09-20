@@ -12,16 +12,18 @@ This service is intended as a stop-gap until more energy can be put into a robus
 
 ## Schema
 
-For each account being backed up, the directory structure is
-
-	/<email address>
-	    /user.json - { email: , password: { type:, hash: } }
-	    /personas
-	        /<persona id>.zip (suggested layout below...)
-	            /persona.json
-	            /keyring
-	                /secrets.json
-	                /subkey(<id>).json
+For each account being backed up, the effective server directory structure is
+	
+```
+/<email address>
+    /user.json - { email: , password: { type:, hash: } }
+    /personas
+        /<persona id>.zip (suggested layout below...)
+            /persona.json
+            /keyring
+                /secrets.json
+                /subkey(<id>).json
+```
 
 ## API
 
@@ -195,13 +197,18 @@ General responses:
 		- Path: /
 		- Destination: keyBackupService:prod
 		- "Save"
-		- Copy Target domain name: d-w6nky6m2oi.execute-api.us-west-2.amazonaws.com
+		- Copy Target domain name: i.e. d-w6nky6m2oi.execute-api.us-west-2.amazonaws.com
 	- Route 53
 		- "Create Record Set"
 		- Name: keybackups
 		- Type: CNAME
 		- Alias: No
-		- Value: d-w6nky6m2oi.execute-api.us-west-2.amazonaws.com
+		- Value: i.e. d-w6nky6m2oi.execute-api.us-west-2.amazonaws.com
 		- "Create"
+	- Binary Media Types
+		- Select keyBackupService, "Settings"
+		- Add these Binary Media Types:
+			- application/octet-stream
+			- application/zip
 
 

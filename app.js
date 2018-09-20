@@ -14,8 +14,8 @@ app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: false }) );
 app.use( bodyParser.raw({ limit:'10mb', type:'*/*' }) );
 
-// support static pages
-app.use(express.static(path.join(__dirname, 'webpages'))); // /webpages --> /
+// support static pages served from /webpages resolved to--> /
+app.use( express.static( path.join(__dirname, 'webpages') ) ); // 
 
 // Connect to S3 and wire in some view routes for debugging
 const bucket = process.env.KEY_BACKUP_S3_BUCKET || 'keybackups.cryptomessaging.org';
